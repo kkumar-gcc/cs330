@@ -115,6 +115,13 @@ extern uint64 sys_pinfo(void);
 extern uint64 sys_forkp(void);
 extern uint64 sys_schedpolicy(void);
 
+extern uint64 sys_barrier_alloc(void);
+extern uint64 sys_barrier(void);
+extern uint64 sys_barrier_free(void);
+extern uint64 sys_buffer_cond_init(void);
+extern uint64 sys_cond_produce(void);
+extern uint64 sys_cond_consume(void);
+
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -147,6 +154,12 @@ static uint64 (*syscalls[])(void) = {
 [SYS_pinfo]   sys_pinfo,
 [SYS_forkp]   sys_forkp,
 [SYS_schedpolicy] sys_schedpolicy,
+[SYS_barrier_alloc] sys_barrier_alloc,
+[SYS_barrier]       sys_barrier,
+[SYS_barrier_free]  sys_barrier_free,
+[SYS_buffer_cond_init] sys_buffer_cond_init,
+[SYS_cond_produce] sys_cond_produce,
+[SYS_cond_consume] sys_cond_consume,
 };
 
 void

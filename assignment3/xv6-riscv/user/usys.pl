@@ -46,3 +46,11 @@ entry("ps");
 entry("pinfo");
 entry("forkp");
 entry("schedpolicy");
+
+entry("barrier_alloc");
+entry("barrier");
+entry("barrier_free");
+
+entry("buffer_cond_init");
+entry("cond_produce");
+entry("cond_consume");

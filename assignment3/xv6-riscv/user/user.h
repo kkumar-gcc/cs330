@@ -35,6 +35,13 @@ int pinfo(int, struct procstat*);
 int forkp(int);
 int schedpolicy(int);
 
+int barrier_alloc(void);
+void barrier(int,int,int);
+void barrier_free(int);
+void buffer_cond_init();
+void cond_produce(int);
+int cond_consume();
+
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);

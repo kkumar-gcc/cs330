@@ -3,6 +3,7 @@
 #include "memlayout.h"
 #include "riscv.h"
 #include "spinlock.h"
+#include "sleeplock.h"
 #include "proc.h"
 #include "defs.h"
 #include "procstat.h"
@@ -18,6 +19,23 @@ struct proc *initproc;
 
 int nextpid = 1;
 struct spinlock pid_lock;
+struct sleeplock s_lock;
+// cond_t c_lock;
+int barriers[10]={};
+struct buffer_elem{
+   int data;
+   int full;
+   struct sleeplock lock;
+   struct cond_t inserted;
+   struct cond_t deleted;
+};
+
+struct buffer_elem buffer[20];
+int tail, head;
+struct sleeplock lock_delete;
+struct sleeplock lock_insert;
+struct sleeplock lock_print;
+
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
@@ -1299,3 +1317,45 @@ schedpolicy(int x)
    sched_policy = x;
    return y;
 }
+
+
+
+
+
+int barrier_alloc(void){
+  int i=0;
+    while(i<10){
+      acquiresleep(&s_lock);
+      if(barriers[i]==0){
+        barriers[i]=1;
+        releasesleep(&s_lock);
+        return i;
+      }
+      releasesleep(&s_lock);
+      i++;
+    }
+    return -1;
+}
+
+void barrier(int n, int id, int np)
+{
+  struct proc *p = myproc();
+  int pid;
+  acquire(&p->lock);
+  pid = p->pid;
+  release(&p->lock);
+  acquiresleep(&s_lock);
+  printf("%d: Entered barrier#%d for barrier array id %d\n", pid, n, id);
+  printf("%d: Finished barrier#%d for barrier array id %d\n", pid, n, id);
+  releasesleep(&s_lock);
+  return;
+}
+
+void barrier_free(int id)
+{
+  acquiresleep(&s_lock);
+  barriers[id] = 0;
+  releasesleep(&s_lock);
+  return;
+}
+

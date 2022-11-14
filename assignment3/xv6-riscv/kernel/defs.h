@@ -8,7 +8,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
-
+typedef struct cond_t cond_t;
 // bio.c
 void            binit(void);
 struct buf*     bread(uint, uint);
@@ -117,6 +117,11 @@ void            cond_broadcast (cond_t*);
 
 void            condsleep(cond_t*,struct sleeplock*);
 void            wakeupone(void*);
+
+int             barrier_alloc(void);
+void            barrier(int,int,int);
+void            barrier_free(int);
+
 // swtch.S
 void            swtch(struct context*, struct context*);
 
