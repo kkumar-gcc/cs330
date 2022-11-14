@@ -104,16 +104,19 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
-int		forkf(uint64);
-int		waitpid(int, uint64);
-int		ps(void);
-int		pinfo(int, uint64);
-int		forkp(int);
-int		schedpolicy(int);
+int		          forkf(uint64);
+int		          waitpid(int, uint64);
+int		          ps(void);
+int		          pinfo(int, uint64);
+int		          forkp(int);
+int		          schedpolicy(int);
 
 void            cond_wait (cond_t*, struct sleeplock*);
 void            cond_signal (cond_t*);
 void            cond_broadcast (cond_t*);
+
+void            condsleep(cond_t*,struct sleeplock*);
+void            wakeupone(void*);
 // swtch.S
 void            swtch(struct context*, struct context*);
 
