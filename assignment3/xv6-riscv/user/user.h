@@ -41,6 +41,9 @@ void barrier_free(int);
 void buffer_cond_init();
 void cond_produce(int);
 int cond_consume();
+void buffer_sem_init();
+void sem_produce(int);
+int sem_consume();
 
 // ulib.c
 int stat(const char*, struct stat*);

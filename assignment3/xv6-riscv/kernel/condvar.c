@@ -6,7 +6,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "sleeplock.h"
-#include "kernel/condvar.h"
+#include "condvar.h"
 
 void
 cond_wait (cond_t *cv, struct sleeplock *lock){

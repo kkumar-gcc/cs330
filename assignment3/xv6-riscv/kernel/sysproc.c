@@ -223,13 +223,38 @@ sys_barrier_free(void)
 
 uint64
 sys_buffer_cond_init(void){
-
+    buffer_cond_init();
+    return 0;
 };
 uint64
 sys_cond_produce(void){
-
+    int p;
+    if(argint(0,&p)<0){
+      return -1;
+    }
+    cond_produce(p);
+    return 0;
 };
 uint64
 sys_cond_consume(void){
+    return cond_consume();
+};
 
+uint64
+sys_buffer_sem_init(void){
+    buffer_sem_init();
+    return 0;
+};
+uint64
+sys_sem_produce(void){
+    int p;
+    if(argint(0,&p)<0){
+      return -1;
+    }
+    sem_produce(p);
+    return 0;
+};
+uint64
+sys_sem_consume(void){
+    return sem_consume();
 };
