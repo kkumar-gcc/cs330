@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "condvar.h": "c",
+        "defs.h": "c"
+    }
+}
