@@ -8,7 +8,7 @@
 #include "defs.h"
 #include "procstat.h"
 #include "condvar.h"
-
+#include "semaphore.h"
 int sched_policy;
 
 struct cpu cpus[NCPU];
@@ -36,6 +36,21 @@ int tail, head;
 struct sleeplock lock_delete;
 struct sleeplock lock_insert;
 struct sleeplock lock_print;
+
+struct b_buffer_elem
+{
+  int x;
+  int full;
+  struct sleeplock lock;
+  struct semaphore inserted;
+  struct semaphore deleted;
+};
+
+struct b_buffer_elem b_buffer[SIZE];
+int b_tail, b_head;
+struct sleeplock b_lock_delete;
+struct sleeplock b_lock_insert;
+struct sleeplock b_lock_print;
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
@@ -1506,5 +1521,56 @@ int cond_consume()
   acquiresleep(&lock_print);
   printf("%d ", v);
   releasesleep(&lock_print);
+  return v;
+}
+
+void buffer_sem_init()
+{
+  initsleeplock(&b_lock_delete, "lock_delete");
+  initsleeplock(&b_lock_insert, "lock_insert");
+  initsleeplock(&b_lock_print, "lock_print");
+  for (int i = 0; i < SIZE; i++)
+  {
+    initsleeplock(&(b_buffer[i].lock), "buffer_lock");
+    b_buffer[i].x = 0;
+    b_buffer[i].full = 0;
+    sem_init(&(b_buffer[i].inserted), 0);
+    sem_init(&(b_buffer[i].deleted), 1);
+  }
+  b_head = 0;
+  b_tail = 0;
+  return;
+}
+
+void sem_produce(int p)
+{
+  acquiresleep(&b_lock_insert);
+  int index = b_tail;
+  b_tail = (b_tail + 1) % SIZE;
+  releasesleep(&b_lock_insert);
+  sem_wait(&b_buffer[index].deleted);
+  acquiresleep(&b_buffer[index].lock);
+  b_buffer[index].x = p;
+  b_buffer[index].full = 1;
+  releasesleep(&b_buffer[index].lock);
+  sem_post(&b_buffer[index].inserted);
+  return;
+}
+
+int sem_consume()
+{
+  int v, index;
+  acquiresleep(&b_lock_delete);
+  index = b_head;
+  b_head = (b_head + 1) % SIZE;
+  releasesleep(&b_lock_delete);
+  sem_wait(&b_buffer[index].inserted);
+  acquiresleep(&b_buffer[index].lock);
+  v = b_buffer[index].x;
+  releasesleep(&b_buffer[index].lock);
+  sem_post(&b_buffer[index].deleted);
+  acquiresleep(&b_lock_print);
+  printf("%d ", v);
+  releasesleep(&b_lock_print);
   return v;
 }

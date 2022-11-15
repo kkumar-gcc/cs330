@@ -8,10 +8,11 @@
 #include "sleeplock.h"
 #include "condvar.h"
 #include "semaphore.h"
+
 void sem_init(struct semaphore *s, int x)
 {
   s->value = x;
-  initsleeplock(&s->cv,"lock");
+  initsleeplock(&s->cv.lk,"lock");
   initsleeplock(&s->lock,"lock");
   return;
 }

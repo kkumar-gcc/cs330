@@ -6,6 +6,7 @@ struct pipe;
 struct proc;
 struct spinlock;
 struct sleeplock;
+struct semaphore;
 struct stat;
 struct superblock;
 typedef struct cond_t cond_t;
@@ -114,6 +115,10 @@ int		          schedpolicy(int);
 void            cond_wait (cond_t*, struct sleeplock*);
 void            cond_signal (cond_t*);
 void            cond_broadcast (cond_t*);
+
+void            sem_init (struct semaphore *, int);
+void            sem_wait (struct semaphore *);
+void            sem_post (struct semaphore *);
 
 void            condsleep(cond_t*,struct sleeplock*);
 void            wakeupone(void*);
